@@ -54,8 +54,8 @@ jobs:
 
       - name: 安装依赖项
         run: |
-          sudo apt update && sudo apt upgrade -y
-          sudo apt install -y python3 git curl
+          sudo apt update
+          sudo apt install -y python3 git curl llvm clang make cmake
 
       - name: 安装和配置 repo 工具
         run: |
@@ -79,15 +79,6 @@ jobs:
             fi
           done
       
-      - name: 设置 KernelSU 分支
-        id: setup_branch
-        run: |
-          if [[ "${{ env.KERNELSU_VARIANT }}" == "KernelSU-Next" && "${{ env.KERNELSU_VERSION }}" == "next" ]]; then
-            echo "BRANCH=-s next-susfs-dev" >> $GITHUB_ENV
-          else
-            echo "BRANCH=" >> $GITHUB_ENV
-          fi
-
       - name: 添加 KernelSU-Next
         id: ksu_version
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
@@ -95,41 +86,19 @@ jobs:
 
           #curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
           curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
-          
-          cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count next) "+" 10606)
+          sudo ls
+          cd ./KernelSU-Next
+          KSU_VERSION=$(expr $(git rev-list --count HEAD) "+" 10000)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           echo "ksuver=$KSU_VERSION" >> $GITHUB_OUTPUT
           
-          sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=$KSU_VERSION/" kernel/Makefile
+          sed -i "s/DKSU_VERSION=.*/DKSU_VERSION=$KSU_VERSION/" kernel/Makefile
 
-      - name: 准备和应用补丁
-        working-directory: ${{ env.WORKSPACE_DIR }}
-        run: |
-          
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
-          git clone https://github.com/ShirkNeko/SukiSU_patch.git
-          
-          cd kernel_platform
-          
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch ./common/
-          cp -r ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp -r ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          
-          cd ./common
-          patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
-          
-          cp ../../SukiSU_patch/69_hide_stuff.patch ./
-          patch -p1 -F 3 < 69_hide_stuff.patch
-          
-          cp ../../SukiSU_patch/hooks/new_hooks.patch ./
-          patch -p1 -F 3 < new_hooks.patch
 
       - name: 配置内核选项
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
