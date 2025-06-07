@@ -68,7 +68,8 @@ jobs:
         run: |
 
           repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/${{ env.CPU }} -m ${{ env.FEIL }}.xml --depth=1
-          repo sync
+          #repo sync
+          repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           
           find kernel_platform -name "abi_gki_protected_exports_*" -delete || echo "No protected exports found!"
           
@@ -82,7 +83,7 @@ jobs:
         id: setup_branch
         run: |
           if [[ "${{ env.KERNELSU_VARIANT }}" == "KernelSU-Next" && "${{ env.KERNELSU_VERSION }}" == "next" ]]; then
-            echo "BRANCH=-s susfs-dev" >> $GITHUB_ENV
+            echo "BRANCH=-s next-susfs-dev" >> $GITHUB_ENV
           else
             echo "BRANCH=" >> $GITHUB_ENV
           fi
@@ -92,7 +93,8 @@ jobs:
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
 
-          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
+          #curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
           
           cd ./KernelSU
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count next) "+" 10606)
