@@ -67,7 +67,7 @@ jobs:
         run: |
           sudo mkdir kernel_platform
           sudo chmod +x kernel_platform
-          git clone https://github.com/OnePlusOSS/android_kernel_oneplus_sm8350.git -b oneplus/SM8350_S_12.0_9Pro --depth=1 kernel_platform
+          sudo git clone https://github.com/OnePlusOSS/android_kernel_oneplus_sm8350.git -b oneplus/SM8350_S_12.0_9Pro --depth=1 kernel_platform
           cd kernel_platform
           find kernel_platform -name "abi_gki_protected_exports_*" -delete || echo "No protected exports found!"
           for script_path in kernel_platform/common/scripts/setlocalversion kernel_platform/msm-kernel/scripts/setlocalversion kernel_platform/external/dtc/scripts/setlocalversion; do
