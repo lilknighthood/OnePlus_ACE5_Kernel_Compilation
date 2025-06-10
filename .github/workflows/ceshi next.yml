@@ -1,4 +1,4 @@
-name: 一加Ace5 ShirokoKerenl内核构建（Next）
+name: 一加9Pro ShirokoKerenl内核构建（Next）
 
 on:
   workflow_dispatch:
@@ -8,11 +8,10 @@ on:
 env:
   RETENTION_COUNT: 3  # 从7减少到3
   CPU: 'sm8650'
-  FEIL: 'oneplus_ace5'
-  CPUD: 'pineapple'
-  ANDROID_VERSION: 'android14'
-  KERNEL_VERSION: '6.1'
-  KERNEL_NAME: '-ShirokoNeko-Next-XinRan-Ace5_0721ciallo'
+  FEIL: 'oneplus_9pro'
+  ANDROID_VERSION: 'android11'
+  KERNEL_VERSION: '5.4'
+  KERNEL_NAME: '-ShirokoNeko-Next-XinRan-9Pro_0721ciallo'
   KERNELSU_VARIANT: 'KernelSU-Next'
   KERNELSU_VERSION: 'next'
   SUSFS_ENABLED: '启用'
@@ -67,9 +66,8 @@ jobs:
         working-directory: ${{ env.WORKSPACE_DIR }}
         run: |
 
-          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/${{ env.CPU }} -m ${{ env.FEIL }}.xml --depth=1
-          #repo sync
-          repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
+          git clone https://github.com/OnePlusOSS/android_kernel_oneplus_sm8350.git -b oneplus/SM8350_S_12.0_9Pro --depth=1
+          
           
           find kernel_platform -name "abi_gki_protected_exports_*" -delete || echo "No protected exports found!"
           
