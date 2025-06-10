@@ -121,8 +121,7 @@ jobs:
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
-          sed -i 's|echo "\$res"|echo "'"$(echo "${{ env.KERNEL_NAME }}" | sed 's/[\&/]/\\&/g')"'"|g' ./common/scripts/setlocalversion
-           
+          sed -i 's|echo "\$res"|echo "'"$(echo "${{ env.KERNEL_NAME }}" | sed 's/[\&/]/\\&/g')"'"|g' ./common/scripts/setlocalversion   
       - name: 构建内核
         working-directory: ${{ env.WORKSPACE_DIR }}
         run: |
