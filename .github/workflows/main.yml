@@ -12,7 +12,7 @@ env:
   CPUD: 'pineapple'
   ANDROID_VERSION: 'android14'
   KERNEL_VERSION: '6.1'
-  KERNEL_NAME: '-Ace5-SukiSU-CoolApk@Xinran_official'
+  KERNEL_NAME: '-ShirokoNeko-8gen3-XinRan-V5-debug'
   KERNELSU_VARIANT: 'SukiSU-Ultra'
   KERNELSU_VERSION: 'main'
   SUSFS_ENABLED: '启用'
@@ -38,8 +38,8 @@ jobs:
 
       - name: 配置环境
         run: |
-          git config --global user.name "Sorynthia"
-          git config --global user.email "2984886500@qq.com"
+          git config --global user.name "Winkmoon"
+          git config --global user.email "3432632982@qq.com"
           
           mkdir -p ${{ env.WORKSPACE_DIR }}
 
@@ -54,7 +54,7 @@ jobs:
 
       - name: 安装依赖项
         run: |
-          sudo apt update && sudo apt upgrade -y
+          sudo apt update
           sudo apt install -y python3 git curl
 
       - name: 安装和配置 repo 工具
@@ -82,7 +82,7 @@ jobs:
         id: setup_branch
         run: |
           if [[ "${{ env.KERNELSU_VARIANT }}" == "SukiSU-Ultra" && "${{ env.KERNELSU_VERSION }}" == "main" ]]; then
-            echo "BRANCH=-s susfs-dev" >> $GITHUB_ENV
+            echo "BRANCH=-s susfs-main" >> $GITHUB_ENV
           else
             echo "BRANCH=" >> $GITHUB_ENV
           fi
