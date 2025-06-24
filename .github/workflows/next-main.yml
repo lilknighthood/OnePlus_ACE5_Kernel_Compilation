@@ -210,11 +210,7 @@ jobs:
           cd $GITHUB_WORKSPACE/AnyKernel3
           zip -r ../AnyKernel3_KernelSU_${{ env.KSUVER }}_${{ env.FEIL }}.zip ./*
           cd ..
-
-      - name: 打包原始镜像 (ZIP)
-        run: |
-          cd $GITHUB_WORKSPACE/kernel_workspace
-          zip -r ../Image_KernelSU_${{ env.KSUVER }}_${{ env.FEIL }}.zip ./init_boot_Image.img
+          
 
       - name: 上传 ZIP 工件
         uses: actions/upload-artifact@v4
@@ -246,7 +242,9 @@ jobs:
           tag_name: "build-${{ github.run_id }}"
           name: "OnePlus_ACE5 Build ${{ github.run_number }}"
           body: |
-            KernelSU-Next 内核
+            KernelSU-Next O+真 8gen3 6.1.118 通用内核
+            - 作者酷安:@欣然酱_official
+            - QQ交流群：527380990
             - 特性：KSUN+VFS
             - 编译时间: ${{ github.event.repository.updated_at }}
             - 内核版本: ${{ needs.build.outputs.ksuver }}
