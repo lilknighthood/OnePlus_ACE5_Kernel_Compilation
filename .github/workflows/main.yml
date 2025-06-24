@@ -1,4 +1,4 @@
-name: OnePlus_ACE5_Kernel_Compilation
+name: OnePlus_ACE5_Kernel_118-ShirokoNeko-Success
 
 on:
   workflow_dispatch:
