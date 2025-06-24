@@ -312,19 +312,9 @@ jobs:
           delete_tag_pattern: 'build-*'
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload file to Telegram (MTProto)
-        uses: mnicolas94/telegram-file-uploader@main
-        with:
-          session-name: 'build-session'
-          api-id: ${{ secrets.TELEGRAM_API_ID }}
-          api-hash: ${{ secrets.TELEGRAM_API_HASH }}
-          bot-token: ${{ secrets.TELEGRAM_TOKEN }}
-          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
-          file-path: 'out/kernel.zip'
-          message: |
-            ✅ Build kernel thành công!
-            🔸 Commit: ${{ github.sha }}
-            🔸 Branch: ${{ github.ref }}
-            🔸 Tác giả: ${{ github.actor }}
-          cache-session: 'true'
-          
+      - name: Upload file to Telegram (Bot API)
+        run: |
+         curl -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+         -F document=@out/kernel.zip \
+         -F caption="✅ Build kernel thành công! Commit: ${{ github.sha }}" \
+         https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
