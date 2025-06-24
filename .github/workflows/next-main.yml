@@ -101,9 +101,9 @@ jobs:
           
           sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=$KSU_VERSION/" kernel/Makefile
 
-      - name: 准备和应用补丁
-        working-directory: ${{ env.WORKSPACE_DIR }}
-        run: |
+      #- name: 准备和应用补丁
+        #working-directory: ${{ env.WORKSPACE_DIR }}
+        #run: |
           
           #git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
           #git clone https://github.com/ShirkNeko/SukiSU_patch.git
@@ -114,7 +114,7 @@ jobs:
           #cp -r ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           #cp -r ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           
-          cd ./common
+          #cd ./common
           #patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
           
           #cp ../../SukiSU_patch/69_hide_stuff.patch ./
