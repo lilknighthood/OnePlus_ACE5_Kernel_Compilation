@@ -1,24 +1,25 @@
-name: OnePlus_ACE5_Kernel_118-ShirokoNeko-Success-next ♪
+name: OnePlus_ACE5_Kernel_118-ShirokoNeko-Success-cutenext
 
 on:
   workflow_dispatch:
-    # 手動でビルドを開始するよ～(◕‿◕✿)
   # schedule:
-   #  - cron: '0 16 * * *'  # 毎日16時に自動ビルドする予定だったけど今はお休み中～(。-`ω-)
+   #  - cron: '0 16 * * *'
+   #为什么name是这种呢？
+   #答：闲的没事改的，也防止一些小白不懂瞎用
 
 env:
-  RETENTION_COUNT: 3  # リリース保持数を7→3に減らしたよ～(´･ω･`)
-  CPU: 'sm8650'       # CPUコード名だよ～(๑>ᴗ<๑)
-  FEIL: 'oneplus_ace5' # デバイスコード♡
-  CPUD: 'pineapple'   # プロジェクトコードはパイナップルだよ～🍍
-  ANDROID_VERSION: 'android14' # アンドロイドバージョン٩(◕‿◕｡)۶
-  KERNEL_VERSION: '6.1' # カーネルバージョン♪
-  KERNEL_NAME: '-ShirokoNeko-8gen3-XinRan-V5-KSUNEXT' # 可愛いカーネル名♡
-  KERNELSU_VARIANT: 'KernelSU-Next' # 使うKernelSUの種類だよ～(｡♥‿♥｡)
-  KERNELSU_VERSION: 'main' # KernelSUのブランチ٩(◕‿◕)۶
-  SUSFS_ENABLED: '有効'  # SUSFS機能♡
-  VFS_PATCH_ENABLED: '有効' # VFSパッチ٩(ˊᗜˋ*)و
-  WORKSPACE_DIR: 'kernel_workspace' # 作業ディレクトリの名前～♪
+  RETENTION_COUNT: 3
+  CPU: 'sm8650'
+  FEIL: 'oneplus_ace5'
+  CPUD: 'pineapple'
+  ANDROID_VERSION: 'android14'
+  KERNEL_VERSION: '6.1'
+  KERNEL_NAME: 'ShirokoNeko-8gen3-XinRan-V5-KSUNEXT'
+  KERNELSU_VARIANT: 'KernelSU-Next'
+  KERNELSU_VERSION: 'main'
+  SUSFS_ENABLED: '启用'
+  VFS_PATCH_ENABLED: '启用'
+  WORKSPACE_DIR: 'kernel_workspace'
 
 jobs:
   build:
@@ -26,7 +27,7 @@ jobs:
     outputs:
       ksuver: ${{ steps.ksu_version.outputs.ksuver }}
     steps:
-      - name: '💾 最大限のビルドスペースを確保するよ～(つ✧ω✧)つ'
+      - name: 小兔兔在整理工作间 ( 'ω' )و
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 8192
@@ -37,14 +38,14 @@ jobs:
           remove-haskell: 'true'
           remove-codeql: 'true'
 
-      - name: '⚙️ 環境を設定するよ～(◠‿◠✿)'
+      - name: 棉花糖云朵布置中 (◕‿◕✿)
         run: |
           git config --global user.name "Winkmoon"
           git config --global user.email "3432632982@qq.com"
-          # 作業ディレクトリを作るよ～(｡･ω･｡)
+          
           mkdir -p ${{ env.WORKSPACE_DIR }}
 
-      - name: '📦 依存関係のキャッシュを設定するよ～(っ˘ω˘ς)'
+      - name: 小仓鼠存坚果 (｡･ω･｡)
         id: apt-cache
         uses: actions/cache@v3
         with:
@@ -53,36 +54,32 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-apt-
 
-      - name: '📚 依存パッケージをインストールするよ～(◍•ᴗ•◍)✧*。'
+      - name: 泡芙塔搭建中 (◠‿◠)✧
         run: |
           sudo apt update
           sudo apt install -y python3 git curl
-          echo "必要なパッケージをインストール完了～(≧▽≦)"
 
-      - name: '🐾 repoツールをインストールするよ～(⁄ ⁄•⁄ω⁄•⁄ ⁄)'
+      - name: 棒棒糖搅拌机启动 (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
         run: |
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
           chmod a+x ~/repo
           sudo mv ~/repo /usr/local/bin/repo
-          echo "repoツールの準備完了～♪"
 
-      - name: '🔄 リポジトリを初期化して同期するよ～(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧'
+      - name: 软绵绵面团揉捏中 (◕‿◕)♡
         working-directory: ${{ env.WORKSPACE_DIR }}
         run: |
-          # カーネルマニフェストを取得するよ～♡
           repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/${{ env.CPU }} -m ${{ env.FEIL }}.xml --depth=1
           repo sync
-          # 不要ファイルをきれいにするよ～(。-`ω-)
-          find kernel_platform -name "abi_gki_protected_exports_*" -delete || echo "不要ファイルはなかったよ～(´･ω･`)"
-          # バージョン管理スクリプトを修正するよ～(｡♥‿♥｡)
+          
+          find kernel_platform -name "abi_gki_protected_exports_*" -delete || echo "No protected exports found!"
+          
           for script_path in kernel_platform/common/scripts/setlocalversion kernel_platform/msm-kernel/scripts/setlocalversion kernel_platform/external/dtc/scripts/setlocalversion; do
             if [ -f "$script_path" ]; then
               sed -i 's/ -dirty//g' "$script_path"
             fi
           done
-          echo "リポジトリ同期完了～٩(◕‿◕｡)۶"
       
-      - name: '✨ KernelSUブランチを設定するよ～(✿◠‿◠)'
+      - name: 布丁口味选择中 (◠‿◠)✧
         id: setup_branch
         run: |
           if [[ "${{ env.KERNELSU_VARIANT }}" == "KernelSU-Next" && "${{ env.KERNELSU_VERSION }}" == "next" ]]; then
@@ -90,45 +87,43 @@ jobs:
           else
             echo "BRANCH=" >> $GITHUB_ENV
           fi
-          echo "ブランチ設定完了～(ﾉ>ω<)ﾉ"
 
-      - name: '🎀 KernelSU-Nextを追加するよ～♡(>ᴗ•)'
+      - name: 彩虹糖撒落中 (☆▽☆)
         id: ksu_version
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
-          # スクリプトでKernelSUをセットアップするよ～(◕‿◕✿)
           curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/refs/heads/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
-          # バージョン番号を計算するよ～(｡･ω･｡)
+          
           cd ./KernelSU
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10606)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           echo "ksuver=$KSU_VERSION" >> $GITHUB_OUTPUT
-          # Makefileを更新するよ～(´∀｀)♡
+          
           sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=$KSU_VERSION/" kernel/Makefile
-          echo "KSUバージョン: $KSU_VERSION を設定したよ～(≧◡≦)"
 
-      #- name: '🎀 パッチを準備して適用するよ～(◠‿◠)✧'
+      #- name: 糖霜装饰中 (´-ωก̀ )
         #working-directory: ${{ env.WORKSPACE_DIR }}
         #run: |
-          #echo "SUSFSパッチを取得中～♡(>ᴗ•)"
+          
           #git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
           #git clone https://github.com/ShirkNeko/SukiSU_patch.git
+          
           #cd kernel_platform
-          #echo "パッチをコピー中～(っ˘ω˘ς)"
+          
           #cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch ./common/
           #cp -r ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           #cp -r ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
+          
           #cd ./common
-          #echo "メインパッチを適用中～(◕‿◕✿)"
           #patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
-          #echo "追加パッチを適用中～(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"
+          
           #cp ../../SukiSU_patch/69_hide_stuff.patch ./
           #patch -p1 -F 3 < 69_hide_stuff.patch
+          
           #cp ../../SukiSU_patch/hooks/new_hooks.patch ./
           #patch -p1 -F 3 < new_hooks.patch
-          #echo "パッチ適用完了～٩(◕‿◕)۶"
 
-      - name: '⚙️ カーネルオプションを設定するよ～(๑•̀ㅂ•́)و✧'
+      - name: 甜甜圈配方调整中 (｀・ω・´)ゞ
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -152,16 +147,14 @@ jobs:
           #echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
 
           sed -i 's/check_defconfig//' ./common/build.config.gki
-          echo "カーネル設定を更新したよ～(◠‿◠✿)"
 
-      - name: '🌸 ビルド名をカスタマイズするよ～(｡♥‿♥｡)'
+      - name: 小猫咪写名字 (◕‿◕)♡
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
           sed -i 's|echo "\$res"|echo "'"$(echo "${{ env.KERNEL_NAME }}" | sed 's/[\&/]/\\&/g')"'"|g' ./common/scripts/setlocalversion
-          echo "可愛いビルド名を設定したよ～(≧◡≦)♡"
            
-      - name: '🔨 カーネルをビルドするよ～(๑>ᴗ<๑)'
+      - name: 棉花糖膨胀中 (◍＞◡＜◍)
         working-directory: ${{ env.WORKSPACE_DIR }}
         run: |
           if [[ "${{ env.CPU }}" == "sm8650" || "${{ env.CPU }}" == "sm8750" ]]; then
@@ -169,9 +162,8 @@ jobs:
           else
             LTO=thin ./kernel_platform/oplus/build/oplus_build_kernel.sh ${{ env.CPUD }} gki
           fi
-          echo "ビルド完了～お疲れ様！(◕‿◕✿)"
 
-      - name: '📦 AnyKernel3を準備するよ～(⁄ ⁄•⁄ω⁄•⁄ ⁄)'
+      - name: 包装纸准备中 (｡･ω･｡)
         run: |
           git clone https://github.com/Kernel-SU/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
@@ -195,16 +187,15 @@ jobs:
             mkdir -p "$dir1"
             if [ "$(realpath "$image_path")" != "$(realpath "$dir1"Image)" ]; then
               cp "$image_path" "$dir1"
-              echo "Imageファイルを発見してコピーしたよ～(◠‿◠)♡"
             else
-              echo "ファイルは既に正しい場所にあるよ～(´･ω･`)"
+              echo "源文件与目标相同，跳过复制"
             fi
           else
-            echo "Imageファイルが見つからなかったよ～ビルド失敗かも？(；ω；)"
+            echo "未找到 Image 文件，构建可能失败"
             exit 1
           fi
 
-      #- name: '✨ カーネルにパッチを適用するよ～(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧'
+      #- name: 糖画画笔挥舞中 (´-ωก̀ )
         #run: |
           #cd kernel_workspace/kernel_platform/out/msm-kernel-${{ env.CPUD }}-gki/dist
           #curl -LO https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
@@ -214,24 +205,21 @@ jobs:
           #mv oImage Image
           #cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
           #cp Image $GITHUB_WORKSPACE/kernel_workspace/init_boot_Image.img
-          #echo "カーネルパッチを適用したよ～(｡♥‿♥｡)"
 
-      - name: '🎁 AnyKernel3をZIPにパッケージングするよ～(◍•ᴗ•◍)✧*。'
+      - name: 礼物盒包装中 (◕‿◕)♡
         run: |
           cd $GITHUB_WORKSPACE/AnyKernel3
           zip -r ../AnyKernel3_KernelSU_${{ env.KSUVER }}_${{ env.FEIL }}.zip ./*
           cd ..
-          echo "ZIPパッケージを作成したよ～(≧◡≦)♡"
           
 
-      - name: '📤 ZIPアーティファクトをアップロードするよ～(｡･ω･｡)'
+      - name: 云朵小推车送货 (ﾉ>ω<)ﾉ
         uses: actions/upload-artifact@v4
         with:
           name: Kernel_ZIP_Artifacts
           path: |
             *.zip
           retention-days: 1
-          # アーティファクトは1日だけ保管するよ～(´･ω･`)
 
   release:
     needs: build
@@ -242,39 +230,36 @@ jobs:
       actions: read
       
     steps:
-      - name: '📥 ZIPアーティファクトをダウンロードするよ～(◕‿◕✿)'
+      - name: 小松鼠取坚果 (｡･ω･｡)
         uses: actions/download-artifact@v4
         with:
           name: Kernel_ZIP_Artifacts
           path: ./release_zips
          
-      - name: '🚀 GitHubリリースを作成するよ～(ﾉ>ω<)ﾉ♡'
+      - name: 贴小兔兔标签 (☆▽☆)
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "build-${{ github.run_id }}"
           name: "OnePlus_ACE5 Build ${{ github.run_number }}"
           body: |
-            🐾 KernelSU-Next O+真 8gen3 6.1.118 ユニバーサルカーネルだよ～(◕‿◕✿)
-            ✨ 特徴: KSUN+VFSパッチ
-            🧩 作者: クーアン @欣然酱_official
-            👪 QQグループ: 527380990
-            🕒 ビルド時間: ${{ github.event.repository.updated_at }}
-            🌸 カーネルバージョン: ${{ needs.build.outputs.ksuver }}
-            📱 推奨マネージャー: [KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next/releases)
-            ⚠️ 注意: バージョンが変わってない時は更新不要だよ～(´･ω･`)
-            💖 このビルドにはkpmとsusfsが含まれてないから注意してね！
-            📥 インストール方法:
-              - AnyKernel3ファイル: TWRP/Recoveryでフラッシュしてね
-              - Imageファイル: Fastbootでフラッシュしてね
-            🎀 ビルドお疲れ様～楽しんでね！(｡♥‿♥｡)
+            KernelSU-Next O+真 8gen3 6.1.118 通用内核
+            - 作者酷安:@欣然酱_official
+            - QQ交流群：527380990
+            - 特性：KSUN+VFS
+            - 编译时间: ${{ github.event.repository.updated_at }}
+            - 内核版本: ${{ needs.build.outputs.ksuver }}
+            - 推荐管理器：[KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next/releases)
+            - 如果构建的内核版本没变，不必更新！此版本无kpm和susfs，介意勿刷
+            - AnyKernel3文件使用 AnyKernel3/Recovery/TWRP 刷入
+            - Image文件解压后使用 Fastboot 刷入
           draft: false
           prerelease: false
           files: |
             release_zips/AnyKernel3_KernelSU_*.zip
             release_zips/Image_KernelSU_*.zip
 
-      - name: '🧹 古いリリースを掃除するよ～(。-`ω-)'
+      - name: 整理糖果罐罐 (。-`ω-)
         uses: dev-drprasad/delete-older-releases@v0.3.4
         continue-on-error: true
         timeout-minutes: 5
@@ -284,4 +269,3 @@ jobs:
           delete_tag_pattern: 'build-*'
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        # 古いビルドをきれいにするよ～(っ˘ω˘ς)
