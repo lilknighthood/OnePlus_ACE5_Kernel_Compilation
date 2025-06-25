@@ -35,12 +35,10 @@ jobs:
         run: |
           git config --global user.name "Sorynthia"
           git config --global user.email "Sorynthia@outlook.com"
-
       - name: 安装依赖
         run: |
           sudo apt update && sudo apt upgrade -y
           sudo apt install -y python3 git curl
-
       - name: 显示选择的输入参数（调试）
         run: |
           echo "CPU: ${{ env.CPU }}"
@@ -49,13 +47,11 @@ jobs:
           echo "安卓版本: ${{ env.ANDROID_VERSION }}"
           echo "内核版本: ${{ env.KERNEL_VERSION }}"
           echo "编译方式: ${{ env.BUILD_METHOD }}"
-
       - name: 安装repo工具
         run: |
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
           chmod a+x ~/repo
           sudo mv ~/repo /usr/local/bin/repo
-
       - name: 初始化repo并同步源码
         run: |
           mkdir kernel_workspace && cd kernel_workspace
@@ -69,7 +65,6 @@ jobs:
           fi
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
-
       - name: 强制移除-dirty后缀
         run: |
           cd kernel_workspace/kernel_platform
@@ -79,7 +74,6 @@ jobs:
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' common/scripts/setlocalversion
           git add -A
           git commit -m "Force remove -dirty suffix from kernel version"
-
       - name: 添加SukiSU Ultra
         run: |
           cd kernel_workspace/kernel_platform
@@ -89,7 +83,6 @@ jobs:
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           export KSU_VERSION=$KSU_VERSION
           sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
-
       - name: 应用SukiSU Ultra补丁
         run: |
           cd kernel_workspace
@@ -100,18 +93,15 @@ jobs:
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-
           cd ./common
           patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
           echo "完成"
-
       - name: 应用隐藏补丁
         run: |
           cd kernel_workspace/kernel_platform/common
           cp ../../SukiSU_patch/69_hide_stuff.patch ./
           echo "正在打隐藏应用补丁"
           patch -p1 -F 3 < 69_hide_stuff.patch
-
       - name: 应用VFS补丁
         run: |
           cd kernel_workspace/kernel_platform/common
@@ -119,19 +109,16 @@ jobs:
           echo "正在打vfs补丁"
           patch -p1 -F 3 < syscall_hooks.patch
           echo "vfs_patch完成"
-
       - name: 添加配置信息
         run: |
           cd kernel_workspace/kernel_platform
           CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
           KERNEL_VERSION="${{ env.KERNEL_VERSION }}"
-
           # SukiSU Ultra config
           echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
           echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
           echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-
           # SUSFS config
           echo "CONFIG_KSU_SUSFS=y" >> "$CONFIG_FILE"
           echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> "$CONFIG_FILE"
@@ -148,26 +135,21 @@ jobs:
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$CONFIG_FILE"
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$CONFIG_FILE"
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
-
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./common/build.config.gki
-
       - name: 添加制作名称
         working-directory: ${{ env.WORKSPACE_DIR }}/kernel_platform
         run: |
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
           sed -i 's|echo "\$res"|echo "'"$(echo "${{ env.KERNEL_NAME }}" | sed 's/[\&/]/\\&/g')"'"|g' ./common/scripts/setlocalversion
-
       - name: 构建内核
         run: |
           cd kernel_workspace
           ./kernel_platform/build_with_bazel.py -t ${{ env.CPUD }} ${{ env.BUILD_METHOD }}
-
       - name: 制作AnyKernel3
         run: |
           git clone https://github.com/Numbersf/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
-
           dir1="kernel_workspace/kernel_platform/out/msm-kernel-${{ env.CPUD }}-${{ env.BUILD_METHOD }}/dist/"
           dir2="kernel_workspace/kernel_platform/bazel-out/k8-fastbuild/bin/msm-kernel/${{ env.CPUD }}_gki_kbuild_mixed_tree/"
           dir3="kernel_workspace/kernel_platform/out/msm-${{ env.CPUD }}-${{ env.CPUD }}-${{ env.BUILD_METHOD }}/dist/"
@@ -175,7 +157,6 @@ jobs:
           dir5="kernel_workspace/kernel_platform/out/msm-${{ env.CPUD }}-${{ env.CPUD }}-${{ env.BUILD_METHOD }}/gki_kernel/common/arch/arm64/boot/"
           target1="./AnyKernel3/"
           target2="./kernel_workspace/kernel"
-
           # 查找 Image 文件
           if find "$dir1" -name "Image" | grep -q "Image"; then
             image_path="$dir1"Image
@@ -190,7 +171,6 @@ jobs:
           else
             image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
           fi
-
           # 拷贝 Image
           if [ -n "$image_path" ] && [ -f "$image_path" ]; then
             mkdir -p "$dir1"
@@ -204,7 +184,6 @@ jobs:
             echo "未找到 Image 文件，构建可能失败"
             exit 1
           fi
-
       - name: 应用patch_linux并替换内核
         run: |
           cd kernel_workspace/kernel_platform/out/msm-kernel-${{ env.CPUD }}-gki/dist
@@ -221,34 +200,27 @@ jobs:
           cd $GITHUB_WORKSPACE/AnyKernel3
           zip -r ../AnyKernel3_KernelSU_${{ env.KSUVER }}_${{ env.FEIL }}.zip ./*
           cd ..
-
       - name: 打包原始镜像 (ZIP)
         run: |
           cd $GITHUB_WORKSPACE/kernel_workspace
           zip -r ../Image_KernelSU_${{ env.KSUVER }}_${{ env.FEIL }}.zip ./init_boot_Image.img
-
       - name: 下载SUSFS模块（CI）
         run: |
           LATEST_RUN_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/sidex15/susfs4ksu-module/actions/runs?status=success" | \
             jq -r '.workflow_runs[] | select(.head_branch == "v1.5.2+") | .id' | head -n 1)
-
           if [ -z "$LATEST_RUN_ID" ]; then
             echo "No successful run found for branch v1.5.2+"
             exit 1
           fi
-
           ARTIFACT_URL=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/sidex15/susfs4ksu-module/actions/runs/$LATEST_RUN_ID/artifacts" | jq -r '.artifacts[0].archive_download_url')
-
           curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -o ksu_module_susfs.zip "$ARTIFACT_URL"
           cp ksu_module_susfs.zip ./AnyKernel3/
-
       - name: 设置后缀
         id: suffix
         run: |
           echo "value=_KPM_VFS" >> $GITHUB_OUTPUT
-
       - name: 移除FEIL中的_uv后缀
         id: feil_clean
         run: |
@@ -256,7 +228,6 @@ jobs:
           clean_feil="${clean_feil%_v}"
           clean_feil="${clean_feil%_u}"
           echo "value=$clean_feil" >> $GITHUB_OUTPUT
-
       - name: 上传 AnyKernel3 ZIP 工件
         uses: actions/upload-artifact@v4
         with:
@@ -268,7 +239,6 @@ jobs:
         id: ksuver
         run: |
           echo "value=${KSUVER}" >> $GITHUB_OUTPUT
-
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -314,9 +284,30 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Upload file to Telegram (Bot API)
         run: |
-         ls -l out/kernel.zip
-         curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-         -F "document=@out/kernel.zip" \
-         -F "caption=✅ Build kernel thành công! Commit: ${{ github.sha }}" \
-         https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
-
+          # Kiểm tra file tồn tại trước khi upload
+          echo "Checking available files:"
+          ls -la ./release_zips/
+          
+          # Tìm file AnyKernel3 để upload
+          ANYKERNEL_FILE=$(find ./release_zips/ -name "AnyKernel3_KernelSU_*.zip" | head -n 1)
+          
+          if [ -n "$ANYKERNEL_FILE" ] && [ -f "$ANYKERNEL_FILE" ]; then
+            echo "Found file to upload: $ANYKERNEL_FILE"
+            
+            # Upload file lên Telegram
+            curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -F "document=@$ANYKERNEL_FILE" \
+              -F "caption=✅ Build kernel thành công!
+          🔹 Phiên bản: ${{ needs.build.outputs.ksuver }}
+          🔹 Commit: ${{ github.sha }}
+          🔹 Thời gian: $(date '+%Y-%m-%d %H:%M:%S')" \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument"
+          else
+            echo "❌ Không tìm thấy file AnyKernel3 để upload"
+            
+            # Gửi thông báo lỗi lên Telegram
+            curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d "text=❌ Build kernel thất bại: Không tìm thấy file để upload
+          Commit: ${{ github.sha }}"
+          fi
