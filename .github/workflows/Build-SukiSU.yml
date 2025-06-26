@@ -1,4 +1,4 @@
-name: 一加ACE5内核编译
+name: OnePlus ACE 5 Kernel
 on:
   workflow_dispatch:
   schedule:
@@ -20,7 +20,7 @@ jobs:
     outputs:
       ksuver: ${{ steps.ksuver.outputs.value }}
     steps:
-      - name: 最大化构建空间
+      - name: Build Space
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 8192
@@ -31,7 +31,7 @@ jobs:
           remove-haskell: 'true'
           remove-codeql: 'true'
 
-      - name: 配置Git信息
+      - name: Configure Git
         run: |
           git config --global user.name "Sorynthia"
           git config --global user.email "Sorynthia@outlook.com"
