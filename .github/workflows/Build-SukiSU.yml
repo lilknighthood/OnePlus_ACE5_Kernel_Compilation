@@ -300,7 +300,6 @@ jobs:
               -F "document=@$ANYKERNEL_FILE" \
               -F "caption=✅ Build kernel thành công!
           🔹 Phiên bản: ${{ needs.build.outputs.ksuver }}
-          #🔹 Commit: ${{ github.sha }}
           🔹 Thời gian: $(date '+%Y-%m-%d')" \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument"
           else
