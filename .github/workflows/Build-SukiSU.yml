@@ -12,7 +12,7 @@ env:
   BUILD_METHOD: 'gki'
   RETENTION_COUNT: 3
   WORKSPACE_DIR: 'kernel_workspace'
-  KERNEL_NAME: '-Sorynthia'
+  KERNEL_NAME: '-mờ_lem'
 
 jobs:
   build:
