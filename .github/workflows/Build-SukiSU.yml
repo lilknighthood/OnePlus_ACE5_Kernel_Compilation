@@ -259,14 +259,14 @@ jobs:
           tag_name: "build-${{ github.run_id }}"
           name: "OnePlus_ACE5 Build ${{ github.run_number }}"
           body: |
-            每日自动编译 SukiSU-Ultra 内核
-            - 机型： 一加ACE5
-            - 特性：MKSU+SUSFS+VFS+KPM
-            - 编译时间: ${{ github.event.repository.updated_at }}
-            - 内核版本: ${{ needs.build.outputs.ksuver }}
-            - 推荐管理器：[SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra/releases)
-            - 如果构建的内核版本没变，不必更新！
-            - AnyKernel3文件使用 AnyKernel3/Recovery/TWRP 刷入
+            Automatic Compilation of SukiSU-Ultra Kernel
+            - Device: OnePlus ACE 5
+            - Features: MKSU + SUSFS + VFS + KPM
+            - Compilation Time: ${{ github.event.repository.updated_at }}
+            - Kernel Version: ${{ needs.build.outputs.ksuver }}
+            - Recommended Manager：[SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra/releases)
+            - No need to update if the built kernel version hasn't changed!
+            - Flash the AnyKernel3 file using AnyKernel3/Recovery/TWRP
           draft: false
           prerelease: false
           files: |
