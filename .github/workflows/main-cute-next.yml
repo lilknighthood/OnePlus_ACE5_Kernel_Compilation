@@ -2,10 +2,8 @@ name: OnePlus_ACE5_Kernel_118-ShirokoNeko-Success-cutenext
 
 on:
   workflow_dispatch:
-  # schedule:
-   #  - cron: '0 16 * * *'
-   #为什么name是这种呢？
-   #答：闲的没事改的，也防止一些小白不懂瞎用
+  schedule:
+    - cron: '0 16 * * *'  # UTC时间23点（北京时间次日7点）
 
 env:
   RETENTION_COUNT: 3
@@ -17,8 +15,8 @@ env:
   KERNEL_NAME: 'ShirokoNeko-8gen3-XinRan-V5-KSUNEXT'
   KERNELSU_VARIANT: 'KernelSU-Next'
   KERNELSU_VERSION: 'main'
-  SUSFS_ENABLED: '启用'
-  VFS_PATCH_ENABLED: '启用'
+  SUSFS_DISABLE: '启用'
+  VFS_PATCH_DISABLE: '启用'
   WORKSPACE_DIR: 'kernel_workspace'
 
 jobs:
