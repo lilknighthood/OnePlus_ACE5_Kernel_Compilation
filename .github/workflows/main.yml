@@ -2,8 +2,8 @@ name: OnePlus_ACE5_Kernel_118-ShirokoNeko-Success
 
 on:
   workflow_dispatch:
-  # schedule:
-   #  - cron: '0 16 * * *'
+  schedule:
+    - cron: '0 23 * * *'  # UTC时间23点（北京时间次日7点）
 
 env:
   RETENTION_COUNT: 3  # 从7减少到3
